@@ -1,71 +1,118 @@
-import React from "react";
+import React, { useState } from "react";
 import { ThemeProvider } from "@rmwc/theme";
 
-import { List, SimpleListItem, ListItem, ListItemGraphic } from "@rmwc/list";
+import {
+  List,
+  SimpleListItem,
+  ListItem,
+  ListItemGraphic,
+  ListItemText,
+  ListItemPrimaryText,
+  ListItemSecondaryText,
+  ListItemMeta,
+} from "@rmwc/list";
 import "@rmwc/list/styles";
 
-/*
+import { Button } from "@rmwc/button";
+import "@rmwc/button/styles";
 
-  <ListItem>
-    <ListItemGraphic icon="star_border" />
-    <ListItemText>
-      <ListItemPrimaryText>Cookies</ListItemPrimaryText>
-      <ListItemSecondaryText>$4.99 a dozen</ListItemSecondaryText>
-    </ListItemText>
-    <ListItemMeta icon="info" />
-  </ListItem>
+import { Checkbox } from "@rmwc/checkbox";
+import "@rmwc/checkbox/styles";
 
-*/
+import { Elevation } from "@rmwc/elevation";
+import "@rmwc/elevation/styles";
+
+import Header from "./Components/Header";
+import TodoInput from "./Components/TodoInput";
+
 const API = "http://localhost:3001";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      todoList: [
-        {
-          todo: "baru",
-          done: true,
-        },
-        {
-          todo: "baru",
-          done: false,
-        },
-        {
-          todo: "baru",
-          done: false,
-        },
-      ],
-      input: "",
-    };
-  }
+function TodoList() {
+  const [input, setInput] = useState("");
 
-  render() {
-    return (
-      <>
-        <h2>Todo List</h2>
+  const [todoList, setTodoList] = useState([
+    {
+      todo: "baru",
+      done: true,
+    },
+    {
+      todo: "barussss",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: true,
+    },
+    {
+      todo: "barussss",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: true,
+    },
+    {
+      todo: "barussss",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: true,
+    },
+    {
+      todo: "barussss",
+      done: false,
+    },
+    {
+      todo: "baru",
+      done: false,
+    },
+  ]);
 
-        <List twoLine>
-          {this.state.todoList.map((todoItem, idx) => (
-            <SimpleListItem
-              graphic={todoItem.done ? "done" : "close"}
-              text={todoItem.todo}
-              secondaryText={todoItem.createdAt}
-            />
-          ))}
-        </List>
-
-        <input
-          type="text"
-          value={this.state.input}
-          onChange={(evt) => {
-            this.setState({ input: evt.target.value });
-          }}
-        />
-        <button>Tambah</button>
-      </>
-    );
-  }
+  return (
+    <Elevation
+      z={8}
+      style={{
+        width: "400px",
+      }}
+    >
+      <Header />
+      <List
+        twoLine
+        style={{
+          overflowY: "scroll",
+          height: "60vh",
+        }}
+      >
+        {todoList.map((todoItem, idx) => (
+          <>
+            <ListItem
+              key={idx}
+              // onClick={() => setChecked({ ...checked, [key]: !checked[key] })}
+            >
+              {todoItem.todo}
+              <ListItemMeta>
+                <Checkbox checked={todoItem.done} readOnly />
+              </ListItemMeta>
+            </ListItem>
+          </>
+        ))}
+      </List>
+      <TodoInput />
+    </Elevation>
+  );
 }
 
 function Container() {
@@ -98,7 +145,16 @@ function Container() {
         textIconOnDark: "rgba(255, 255, 255, 0.5)",
       }}
     >
-      <App />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <TodoList />
+      </div>
     </ThemeProvider>
   );
 }
