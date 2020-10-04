@@ -9,21 +9,76 @@ import {
   ListItemPrimaryText,
   ListItemSecondaryText,
   ListItemMeta,
+  ListDivider,
 } from "@rmwc/list";
 import "@rmwc/list/styles";
 
-import { Checkbox } from "@rmwc/checkbox";
-import "@rmwc/checkbox/styles";
-
 import { Elevation } from "@rmwc/elevation";
 import "@rmwc/elevation/styles";
+
+import { IconButton } from "@rmwc/icon-button";
+import "@rmwc/icon-button/styles";
+
+import moment from "moment";
 
 import Header from "./Components/Header";
 import TodoInput from "./Components/TodoInput";
 
 const API = "http://localhost:3001";
 
-function TodoList() {
+function TodoItem({ item, setDidUpdate }) {
+  return (
+    <ListItem
+      onClick={() => {
+        fetch(`${API}/todos/${item._id}`, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          method: "PATCH",
+          body: JSON.stringify({
+            todo: item.todo,
+            done: !item.done,
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            setDidUpdate(true);
+          });
+      }}
+    >
+      <ListItemGraphic
+        icon={item.done ? "check_box" : "check_box_outline_blank"}
+      />
+      <ListItemText>
+        <ListItemPrimaryText>{item.todo}</ListItemPrimaryText>
+        <ListItemSecondaryText>
+          {moment(item.updatedAt).calendar()}
+        </ListItemSecondaryText>
+      </ListItemText>
+      <ListItemMeta>
+        <IconButton
+          icon="close"
+          label="Hapus item"
+          onClick={() => {
+            fetch(`${API}/todos/${item._id}`, {
+              headers: {
+                Accept: "application/json",
+              },
+              method: "DELETE",
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                setDidUpdate(true);
+              });
+          }}
+        />
+      </ListItemMeta>
+    </ListItem>
+  );
+}
+
+function App() {
   const [todoList, setTodoList] = useState([]);
 
   const [didUpdate, setDidUpdate] = useState(false);
@@ -49,6 +104,8 @@ function TodoList() {
   }, [didUpdate]);
 
   const todoListOrdered = todoList.sort((a, b) => a.updatedAt < b.updatedAt);
+  const todoListDone = todoListOrdered.filter((a) => a.done);
+  const todoListNotDone = todoListOrdered.filter((a) => !a.done);
 
   return (
     <Elevation
@@ -58,6 +115,17 @@ function TodoList() {
       }}
     >
       <Header />
+      {todoListOrdered.length === 0 && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <p style={{ color: "gray", fontSize: "14px" }}>Tidak ada item.</p>
+        </div>
+      )}
       <List
         twoLine
         style={{
@@ -65,23 +133,12 @@ function TodoList() {
           height: "60vh",
         }}
       >
-        {todoListOrdered.map((todoItem, idx) => (
-          <>
-            <ListItem
-              key={idx}
-              // onClick={() => setChecked({ ...checked, [key]: !checked[key] })}
-            >
-              <ListItemText>
-                <ListItemPrimaryText>{todoItem.todo}</ListItemPrimaryText>
-                <ListItemSecondaryText>
-                  Sejak {todoItem.updatedAt}
-                </ListItemSecondaryText>
-              </ListItemText>
-              <ListItemMeta>
-                <Checkbox checked={todoItem.done} readOnly />
-              </ListItemMeta>
-            </ListItem>
-          </>
+        {todoListNotDone.map((todoItem, idx) => (
+          <TodoItem item={todoItem} setDidUpdate={setDidUpdate} />
+        ))}
+        {todoListDone.length > 0 && <ListDivider />}
+        {todoListDone.map((todoItem, idx) => (
+          <TodoItem item={todoItem} setDidUpdate={setDidUpdate} />
         ))}
       </List>
       <TodoInput setDidUpdate={setDidUpdate} />
@@ -127,7 +184,7 @@ function Container() {
           height: "100vh",
         }}
       >
-        <TodoList />
+        <App />
       </div>
     </ThemeProvider>
   );
