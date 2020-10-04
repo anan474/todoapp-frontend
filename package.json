@@ -5,6 +5,8 @@
   "dependencies": {
     "@rmwc/button": "^6.1.4",
     "@rmwc/checkbox": "^6.1.4",
+    "@rmwc/circular-progress": "^6.1.4",
+    "@rmwc/dialog": "^6.1.4",
     "@rmwc/elevation": "^6.1.4",
     "@rmwc/icon": "^6.1.4",
     "@rmwc/list": "^6.1.4",

@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ThemeProvider } from "@rmwc/theme";
 
 import {
   List,
-  SimpleListItem,
   ListItem,
   ListItemGraphic,
   ListItemText,
@@ -12,9 +11,6 @@ import {
   ListItemMeta,
 } from "@rmwc/list";
 import "@rmwc/list/styles";
-
-import { Button } from "@rmwc/button";
-import "@rmwc/button/styles";
 
 import { Checkbox } from "@rmwc/checkbox";
 import "@rmwc/checkbox/styles";
@@ -28,58 +24,31 @@ import TodoInput from "./Components/TodoInput";
 const API = "http://localhost:3001";
 
 function TodoList() {
-  const [input, setInput] = useState("");
+  const [todoList, setTodoList] = useState([]);
 
-  const [todoList, setTodoList] = useState([
-    {
-      todo: "baru",
-      done: true,
-    },
-    {
-      todo: "barussss",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: true,
-    },
-    {
-      todo: "barussss",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: true,
-    },
-    {
-      todo: "barussss",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: true,
-    },
-    {
-      todo: "barussss",
-      done: false,
-    },
-    {
-      todo: "baru",
-      done: false,
-    },
-  ]);
+  const [didUpdate, setDidUpdate] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API}/todos/semua`)
+      .then((res) => res.json())
+      .then((res) => {
+        setTodoList(res);
+        setDidUpdate(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (didUpdate) {
+      fetch(`${API}/todos/semua`)
+        .then((res) => res.json())
+        .then((res) => {
+          setTodoList(res);
+          setDidUpdate(false);
+        });
+    }
+  }, [didUpdate]);
+
+  const todoListOrdered = todoList.sort((a, b) => a.updatedAt < b.updatedAt);
 
   return (
     <Elevation
@@ -96,13 +65,18 @@ function TodoList() {
           height: "60vh",
         }}
       >
-        {todoList.map((todoItem, idx) => (
+        {todoListOrdered.map((todoItem, idx) => (
           <>
             <ListItem
               key={idx}
               // onClick={() => setChecked({ ...checked, [key]: !checked[key] })}
             >
-              {todoItem.todo}
+              <ListItemText>
+                <ListItemPrimaryText>{todoItem.todo}</ListItemPrimaryText>
+                <ListItemSecondaryText>
+                  Sejak {todoItem.updatedAt}
+                </ListItemSecondaryText>
+              </ListItemText>
               <ListItemMeta>
                 <Checkbox checked={todoItem.done} readOnly />
               </ListItemMeta>
@@ -110,7 +84,7 @@ function TodoList() {
           </>
         ))}
       </List>
-      <TodoInput />
+      <TodoInput setDidUpdate={setDidUpdate} />
     </Elevation>
   );
 }

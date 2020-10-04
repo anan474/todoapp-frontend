@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { SimpleTopAppBar, TopAppBarFixedAdjust } from "@rmwc/top-app-bar";
 import "@rmwc/top-app-bar/styles";
 
